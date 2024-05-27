@@ -286,7 +286,7 @@ let ty_to_external_ty uty ty0 : External.ty =
 exception FoundHole
 
 let exp_to_external_exp uty e0 =
-  let[@tail_mod_cons] rec lp env e =
+  let rec lp env e =
     match !e with
     | Hole _ -> raise FoundHole
     | Ref x -> List.assq x env
@@ -295,7 +295,7 @@ let exp_to_external_exp uty e0 =
        let x_ty = ty_to_external_ty uty x.var_ty in
        External.Let
          ((x.var_name, x_ty), lp env e1,
-          (lp[@tailcall])
+          lp
             ((x, External.Ref (x.var_name, x_ty)) :: env)
             e2)
     | Lambda (xs, e_body) ->
